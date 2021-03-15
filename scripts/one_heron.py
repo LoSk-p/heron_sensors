@@ -24,9 +24,12 @@ class WaterDrone:
         rospy.Subscriber("/navsat/fix", NavSatFix, self.get_coord)
         self.k_lon = 111320
         self.k_lat = 111319*math.cos(self.way_coord[0]['lat']*math.pi/180)
-        self.err_m = 1
+        self.err_m = 5             # Ошибка GPS м
         self.err_lat = self.err_m/self.k_lat
         self.err_lon = self.err_m/self.k_lon
+        self.err_temp_coord = 0.00002     # Ошибка GPS для поиска температуры по файлу
+        self.temperature = 0
+        self.current_angle = 0
 
     # def look_herons(self):
     #     nodes = rosnode.get_node_names()
@@ -36,13 +39,20 @@ class WaterDrone:
     def get_coord(self, data):
         self.my_lat = data.latitude
         self.my_lon = data.longitude
+    def get_temperature(self):
+        with open('../utils/with_temp') as map_temp:
+            for line in map_temp:
+                js = literal_eval(line)
+                if (abs(self.my_lat - js['lat']) < self.err_temp_coord) and (abs(self.my_lon - js['lon']) < self.err_temp_coord):
+                    self.temperature = js['temp']
+                    break
     def line(self, target_lat, target_lon):
         # lon = k*lat + b
         self.current_line['k'] = (target_lon - self.my_lon)/(target_lat - self.my_lat)
         self.current_line['b'] = target_lon - self.current_line['k']*target_lat
         self.current_line['angle'] = math.atan2(target_lon - self.my_lon, target_lat - self.my_lat)
         print(f'angle = {self.current_line["angle"]}')
-    def go(self):
+    def go_targets(self):
         sleep(1)
         #plt.figure()
         #plt.ion()
@@ -54,6 +64,7 @@ class WaterDrone:
         for target in self.way_coord:
             print(f'New target {target}')
             self.line(target['lat'], target['lon'])
+            self.current_angle = self.current_line['angle']
             course_mess = Course()
             course_mess.yaw = -self.current_line['angle'] + math.pi/2
             course_mess.speed = 0
