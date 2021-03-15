@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(control_group_heron)
+project(heron_sensors)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -106,10 +106,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES control_group_heron
-#  CATKIN_DEPENDS heron_msgs roscpp rospy sensor_msgs std_msgs
-#  DEPENDS system_lib
+  INCLUDE_DIRS 
+  LIBRARIES 
+  CATKIN_DEPENDS heron_msgs roscpp rospy sensor_msgs std_msgs geometry_msgs
+  DEPENDS 
 )
 
 ###########
@@ -125,7 +125,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/control_group_heron.cpp
+#   src/${PROJECT_NAME}/heron_sensors.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -164,7 +164,8 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
    scripts/one_heron.py
-   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}/scripts
+   scripts/way_lodka.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
 ## Mark executables for installation
@@ -190,9 +191,12 @@ include_directories(
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+#   launch/create_way.launch
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+# )
+# install(FILES
+#   utils/borders
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/utils
 # )
 
 #############
