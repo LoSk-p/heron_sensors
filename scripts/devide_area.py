@@ -8,7 +8,7 @@ import os
 import logging, sys
 
 logging.basicConfig(level=logging.INFO)
-boat_number = 4
+boat_number = 1
 
 x = []
 y = []

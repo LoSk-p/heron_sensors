@@ -1,0 +1,9 @@
+<launch>
+    <arg name="nom_drones" value=1/>
+    
+    <group if="$(arg new_way)">
+        <node pkg="heron_sensors" type="way_lodka.py" name="create_name" output="screen">
+            <param name="borders" value="$(arg borders)" />
+        </node>
+    </group>
+</launch>

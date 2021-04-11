@@ -36,7 +36,7 @@ with open(f'{path}utils/borders_several') as f:
                     x[j] += 10**(-6)
         plt.plot(x, y)
         #plt.show()
-        step = 10
+        step = 15
 
         def next_prev(i):
             if i == 0:
