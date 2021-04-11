@@ -3,6 +3,14 @@ Water drone traverses a given area and get data about temperature from temperatu
 Gazebo simulation was given from https://github.com/heron
 
 ## Installation
+
+Required dependencies:
+
+```bash
+sudo apt-get install ros-melodic-gazebo-ros-control ros-melodic-effort-controllers ros-melodic-joint-state-controller ros-melodic-imu-tools ros-melodic-uuv-simulator ros-melodic-lms1xx
+pip3 install matplotlib
+```
+
 Install heron repositories:
 ```bash
 cd catkin_ws/src
