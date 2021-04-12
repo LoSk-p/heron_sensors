@@ -90,7 +90,11 @@ class WaterDrone:
         # lon = k*lat + b
         self.current_line['k'] = (target_lon - self.my_lon)/(target_lat - self.my_lat)
         self.current_line['b'] = target_lon - self.current_line['k']*target_lat
-        self.current_line['angle'] = math.pi/2 - math.atan2(target_lon - self.my_lon, target_lat - self.my_lat)
+        angle = math.pi/2 - math.atan2(target_lon - self.my_lon, target_lat - self.my_lat)
+        if angle < 0:
+            self.current_line['angle'] = angle + 2*math.pi
+        else:
+            self.current_line['angle'] = angle
         # print(f'angle = {self.current_line["angle"]}')
 
     def go_pollution(self):
