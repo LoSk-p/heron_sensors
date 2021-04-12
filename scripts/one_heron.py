@@ -14,7 +14,7 @@ from ast import literal_eval
 
 class WaterDrone:
     def __init__(self, boat_nomber):
-        self.with_pollution_looking = False
+        self.with_pollution_looking = True
         self.boat_nomber = boat_nomber
         if self.boat_nomber == 0:
             self.prefix = ''
@@ -97,62 +97,62 @@ class WaterDrone:
             self.current_line['angle'] = angle
         # print(f'angle = {self.current_line["angle"]}')
 
-    def go_pollution(self):
-        initial_coord = {"lat": self.my_lat, "lon": self.my_lon}
-        course_mess = Course()
-        course_mess.speed = -1
-        self.course_pub.publish(course_mess)
-        time.sleep(3)
-        count = 0
-        right_angle = False
-        while not right_angle:
-            self.current_angle = self.current_angle - self.angle_step
-            course_mess.speed = 0
-            course_mess.yaw = self.current_angle
-            self.course_pub.publish(course_mess)
-            time.sleep(2)
-            course_mess.speed = 0.8
-            self.course_pub.publish(course_mess)
-            time.sleep(5)
-            plt.plot(self.my_lat, self.my_lon, 'ro')
-            plt.draw()
-            plt.pause(0.001)
-            self.get_temperature()
-            if abs(self.temperature - self.normal_temp) > self.err_temp:
-                course_mess.speed = -1
-                self.course_pub.publish(course_mess)
-                time.sleep(5)
-                plt.plot(self.my_lat, self.my_lon, 'ro')
-                plt.draw()
-                plt.pause(0.001)
-            else:
-                right_angle = True
-                course_mess.speed = 0
-                self.course_pub.publish(course_mess)
-        while ((abs(self.my_lat - initial_coord["lat"]) > self.err_temp_coord/10) or (abs(self.my_lon - initial_coord["lon"]) > self.err_temp_coord/10)) or (count < 5):
-            print(f'my lat - init {abs(self.my_lat - initial_coord["lat"])}, err {self.err_temp_coord/2},my lon - init {abs(self.my_lon - initial_coord["lon"])}, err {self.err_temp_coord/2}')
-            self.get_temperature()
-            print(f'temerature in pollution {self.temperature}')
-            if abs(self.temperature - self.normal_temp) > self.err_temp:
-                self.current_angle = self.current_angle - self.angle_step
-                course_mess.yaw = self.current_angle
-            else:
-                self.current_angle = self.current_angle + self.angle_step*2
-                course_mess.yaw = self.current_angle
-            print(f'course {course_mess}')
-            course_mess.speed = 0
-            self.course_pub.publish(course_mess)
-            count += 1
-            time.sleep(8)
-            course_mess.speed = 0.5
-            self.course_pub.publish(course_mess)
-            time.sleep(3)
-            plt.plot(self.my_lat, self.my_lon, 'ro')
-            plt.draw()
-            plt.pause(0.001)
-            with open(f'{self.path}utils/pollution_borders', 'a') as f4:
-                data = {"lat": self.my_lat, "lon": self.my_lon, "temp": self.temperature}
-                f4.write(f'{data} \n')
+    # def go_pollution(self):
+    #     initial_coord = {"lat": self.my_lat, "lon": self.my_lon}
+    #     course_mess = Course()
+    #     course_mess.speed = -1
+    #     self.course_pub.publish(course_mess)
+    #     time.sleep(3)
+    #     count = 0
+    #     right_angle = False
+    #     while not right_angle:
+    #         self.current_angle = self.current_angle - self.angle_step
+    #         course_mess.speed = 0
+    #         course_mess.yaw = self.current_angle
+    #         self.course_pub.publish(course_mess)
+    #         time.sleep(2)
+    #         course_mess.speed = 0.8
+    #         self.course_pub.publish(course_mess)
+    #         time.sleep(5)
+    #         plt.plot(self.my_lat, self.my_lon, 'ro')
+    #         plt.draw()
+    #         plt.pause(0.001)
+    #         self.get_temperature()
+    #         if abs(self.temperature - self.normal_temp) > self.err_temp:
+    #             course_mess.speed = -1
+    #             self.course_pub.publish(course_mess)
+    #             time.sleep(5)
+    #             plt.plot(self.my_lat, self.my_lon, 'ro')
+    #             plt.draw()
+    #             plt.pause(0.001)
+    #         else:
+    #             right_angle = True
+    #             course_mess.speed = 0
+    #             self.course_pub.publish(course_mess)
+    #     while ((abs(self.my_lat - initial_coord["lat"]) > self.err_temp_coord/10) or (abs(self.my_lon - initial_coord["lon"]) > self.err_temp_coord/10)) or (count < 5):
+    #         print(f'my lat - init {abs(self.my_lat - initial_coord["lat"])}, err {self.err_temp_coord/2},my lon - init {abs(self.my_lon - initial_coord["lon"])}, err {self.err_temp_coord/2}')
+    #         self.get_temperature()
+    #         print(f'temperature in pollution {self.temperature}')
+    #         if abs(self.temperature - self.normal_temp) > self.err_temp:
+    #             self.current_angle = self.current_angle - self.angle_step
+    #             course_mess.yaw = self.current_angle
+    #         else:
+    #             self.current_angle = self.current_angle + self.angle_step*2
+    #             course_mess.yaw = self.current_angle
+    #         print(f'course {course_mess}')
+    #         course_mess.speed = 0
+    #         self.course_pub.publish(course_mess)
+    #         count += 1
+    #         time.sleep(8)
+    #         course_mess.speed = 0.5
+    #         self.course_pub.publish(course_mess)
+    #         time.sleep(3)
+    #         plt.plot(self.my_lat, self.my_lon, 'ro')
+    #         plt.draw()
+    #         plt.pause(0.001)
+    #         with open(f'{self.path}utils/pollution_borders', 'a') as f4:
+    #             data = {"lat": self.my_lat, "lon": self.my_lon, "temp": self.temperature}
+    #             f4.write(f'{data} \n')
 
     def sign(self, a):
         if a > 0:
@@ -164,7 +164,7 @@ class WaterDrone:
 
     def delta_temp(self):
 
-        delta_temp = (current_temp - self.prev_temp)/(time.time()-self.prev_time)
+        delta_temp = (self.temperature - self.prev_temp)/(time.time()-self.prev_time)
         self.prev_temp = self.temperature
         self.prev_time = time.time()
         return delta_temp
@@ -174,17 +174,25 @@ class WaterDrone:
         
 
     def inpollution_control(self):
-        mu = 1
+        mu = 0.1
         speed_max = 1
         speed_min = -1
         drive_msg = Drive()
         self.get_temperature()
-        self.u_0 = 0.5
-        delta = self.delta_temp
-        sigma = -self.sign((delta - mu*math.tanh(self.temperature - self.looking_value_temp)))
-        drive_msg.right= 0.5*0.25*(1 - sigma) + u_0
-        drive_msg.left = 0.5*0.25*(1 + sigma) + u_0
-        self.thrust_pub.publish(drive_msg)
+        self.u_0 = 0.1
+        while True:
+            self.get_temperature()
+            delta = self.delta_temp()
+            sigma = -self.sign((delta - mu*math.tanh(self.temperature - self.looking_value_temp)))
+            drive_msg.right = 0.5*0.05*(1 - sigma) + self.u_0
+            drive_msg.left = 0.5*0.05*(1 + sigma) + self.u_0
+            print(f"pub left {drive_msg.left} right {drive_msg.right}")
+            print(f"temp: {self.temperature}, delta: {delta}, sigma: {sigma}")
+            # time.sleep(1)
+            self.thrust_pub.publish(drive_msg)
+            plt.plot(self.my_lat, self.my_lon, 'ro')
+            plt.draw()
+            plt.pause(0.001)
 
 
 
@@ -198,10 +206,19 @@ class WaterDrone:
         final_coord = [[],[]]
         coords = []
         inPollution = False
+        angle_err = 0.05
         drive_msg = Drive()
         for target in self.way_coord:
             print(f'New target {target}')
             self.line(target['lat'], target['lon'])
+            while abs(self.current_angle - self.current_line["angle"]) > angle_err:
+                drive_msg.left = 0.1*(self.current_angle - self.current_line['angle'])
+                drive_msg.right = -0.1*(self.current_angle - self.current_line['angle'])
+                # print(f"req angle in while: {self.current_line['angle']}")
+                # print(f"curr angle in while : {self.current_angle}")
+                # print(f"pub left {drive_msg.left} right {drive_msg.right}")
+                self.thrust_pub.publish(drive_msg)
+
             # self.current_angle = -self.current_line['angle'] + math.pi/2
             # course_mess = Course()
             # course_mess.yaw = -self.current_line['angle'] + math.pi/2
