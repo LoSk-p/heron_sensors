@@ -18,14 +18,15 @@ path = os.path.realpath(__file__)[:-22]
 linsx = [[],[],[]]
 linsy = [[],[],[]]
 colors = ['r', 'b', 'g']
-#for i in range(boat_nomber):
-color = colors[0]
-with open(f'{path}utils/ways/way1') as f:
-    for line in f:
-        js = literal_eval(line)
-        print(line)
-        linsx[0].append(float(js['lat']))
-        linsy[0].append(float(js['lon']))
-#for i in range(boat_nomber):
-plt.plot(linsx[0], linsy[0], color=colors[0])
+for i in range(boat_nomber):
+    color = colors[i]
+    with open(f'{path}utils/{i}coord-err-1m') as f:
+        for line in f:
+            line = line.split(';')
+            # js = literal_eval(line)
+            # print(line)
+            linsx[i].append(float(line[0]))
+            linsy[i].append(float(line[1]))
+for i in range(boat_nomber):
+    plt.plot(linsx[i], linsy[i], color=colors[i])
 plt.show()
