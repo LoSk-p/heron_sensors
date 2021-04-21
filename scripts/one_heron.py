@@ -137,9 +137,12 @@ class WaterDrone:
                     if (abs(self.my_lat - lat) < self.err_temp_coord) and (abs(self.my_lon - lon) < self.err_temp_coord):
                         self.temperature = float(temp)
                         print(f'get_temperature, temperature = {self.temperature}')
-                        break
+                        #break
+                        return
                     x += 1
                 y += 1
+                
+
 
     def line(self, target_lat, target_lon):
         # lon = k*lat + b
@@ -231,7 +234,7 @@ class WaterDrone:
     
 
     def inpollution_control(self):
-        mu = 0.01
+        mu = 40
         helm_msg = Helm()
         self.get_temperature()
         v = 0.7
