@@ -254,7 +254,7 @@ class WaterDrone:
         self.get_temperature()
         v = 0.4
         R_min = 0.5
-        u_max = 0.2
+        u_max = 1
         u_min = -u_max
         angle = 0
         prev_time = time.time()
@@ -274,7 +274,7 @@ class WaterDrone:
             print(f"looking_temp {self.looking_value_temp}")
             print(f"temp: {self.temperature}, delta: {delta}, sigma: {sigma}")
             # self.ax[0].plot(self.my_lat, self.my_lon, 'ro')
-            self.ax.plot(self.my_lat, self.my_lon, 'ro')
+            self.ax.plot(self.my_lat, self.my_lon, 'ro', markersize=1)
             plt.draw()
             plt.pause(0.01)
             # n = n+1

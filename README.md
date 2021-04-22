@@ -27,6 +27,7 @@ rosdep install --from-paths src --ignore-src --rosdistro=melodic -yr
 ```
 Clone control package:
 ```bash
+cd ~/catkin_ws/src
 git clone https://github.com/LoSk-p/heron_sensors
 ```
 Build the workspace:
