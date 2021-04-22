@@ -49,10 +49,14 @@ class WaterDrone:
             temp = np.array(temp)
             temp = temp.reshape((201, 201))
             temp = np.transpose(temp)
-            fig, ax = plt.subplots()
-            CS = ax.contour(X, Y, temp)
-            ax.clabel(CS, inline=True, fontsize=10)
-            ax.set_title('Simplest default with labels')
+            # self.fig, self.ax = plt.subplots(1, 2)
+            self.fig, self.ax = plt.subplots()
+            # CS = self.ax[0].contour(X, Y, temp)
+            # self.ax[0].clabel(CS, inline=True, fontsize=10)
+            # self.ax[0].set_title('Simplest default with labels')
+            CS = self.ax[0].contour(X, Y, temp)
+            self.ax.clabel(CS, inline=True, fontsize=10)
+            self.ax.set_title('Simplest default with labels')
             plt.draw()
             plt.pause(0.01)
 
@@ -102,6 +106,10 @@ class WaterDrone:
         self.prev_temp = 0
         self.prev_time = 0
         self.u_0 = 0.5
+        #self.f1 = plt.figure(1)
+        #self.f2 = plt.figure(2)
+        self.arr_x = []
+        self.arr_y = []
 
     # def look_herons(self):
     #     nodes = rosnode.get_node_names()
@@ -224,9 +232,16 @@ class WaterDrone:
     def delta_temp(self):
 
         delta_temp = (self.temperature - self.prev_temp)/(time.time()-self.prev_time)
+        delta_time = time.time()-self.prev_time
         self.prev_time = time.time()
         print(f'delta prev temp {self.prev_temp}, temp {self.temperature} time {time.time()-self.prev_time}')
         self.prev_temp = self.temperature
+        # self.ax[1].scatter(time.time(), delta_temp)
+        self.ax.scatter(time.time(), delta_temp)
+        plt.draw()
+        plt.pause(0.001)
+        # self.arr_x.append(time.time())
+        # self.arr_y.append(delta_temp)
         return delta_temp
     
     def get_orientation(self, data):
@@ -234,19 +249,21 @@ class WaterDrone:
     
 
     def inpollution_control(self):
-        mu = 40
+        mu = 0.000000001
         helm_msg = Helm()
         self.get_temperature()
-        v = 0.7
+        v = 0.4
         R_min = 0.5
-        u_max = 0.7
+        u_max = 0.5
         u_min = -u_max
         angle = 0
         prev_time = time.time()
+        # n = 0
         while True:
             self.get_temperature()
             delta = self.delta_temp()
-            sigma = -self.sign((delta - mu*math.tanh(self.temperature - self.looking_value_temp)))
+            sigma = -self.sign((delta + mu*math.tanh(self.temperature - self.looking_value_temp)))
+            #sigma = -self.sign((delta))
             u = 0.5*((1 - sigma)*u_min + (1 + sigma)*u_max)
             #angle = angle + (time.time() - prev_time)*u
             #prev_time = time.time()
@@ -256,9 +273,14 @@ class WaterDrone:
             print(f"pub yaw rate {helm_msg.yaw_rate}")
             print(f"looking_temp {self.looking_value_temp}")
             print(f"temp: {self.temperature}, delta: {delta}, sigma: {sigma}")
-            plt.plot(self.my_lat, self.my_lon, 'ro')
+            self.ax[0].plot(self.my_lat, self.my_lon, 'ro')
             plt.draw()
             plt.pause(0.01)
+            # n = n+1
+        
+        # plt.figure(2)
+        # plt.plot(self.arr_x, self.arr_y)
+        # plt.show()
 
 
         # while True:
@@ -351,7 +373,8 @@ class WaterDrone:
                 course_mess.speed = 1
                 print(course_mess)
                 self.course_pub.publish(course_mess)
-                plt.plot(self.my_lat, self.my_lon, 'ro')
+                # self.ax[0].plot(self.my_lat, self.my_lon, 'ro')
+                self.ax.plot(self.my_lat, self.my_lon, 'ro')
                 plt.draw()
                 plt.pause(0.001)
                 f1.write(f'{self.my_lat}; {self.my_lon}\n')
