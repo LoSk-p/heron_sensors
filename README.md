@@ -9,6 +9,7 @@ Required dependencies:
 ```bash
 sudo apt-get install ros-melodic-gazebo-ros-control ros-melodic-effort-controllers ros-melodic-joint-state-controller ros-melodic-imu-tools ros-melodic-uuv-simulator ros-melodic-lms1xx
 pip3 install matplotlib
+sudo apt-get install python3-empy
 ```
 
 Install heron repositories:
