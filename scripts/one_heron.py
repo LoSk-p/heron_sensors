@@ -54,7 +54,7 @@ class WaterDrone:
             # CS = self.ax[0].contour(X, Y, temp)
             # self.ax[0].clabel(CS, inline=True, fontsize=10)
             # self.ax[0].set_title('Simplest default with labels')
-            CS = self.ax[0].contour(X, Y, temp)
+            CS = self.ax.contour(X, Y, temp)
             self.ax.clabel(CS, inline=True, fontsize=10)
             self.ax.set_title('Simplest default with labels')
             plt.draw()
@@ -237,9 +237,9 @@ class WaterDrone:
         print(f'delta prev temp {self.prev_temp}, temp {self.temperature} time {time.time()-self.prev_time}')
         self.prev_temp = self.temperature
         # self.ax[1].scatter(time.time(), delta_temp)
-        self.ax.scatter(time.time(), delta_temp)
-        plt.draw()
-        plt.pause(0.001)
+        #self.ax.scatter(time.time(), delta_temp)
+        #plt.draw()
+        #plt.pause(0.001)
         # self.arr_x.append(time.time())
         # self.arr_y.append(delta_temp)
         return delta_temp
@@ -249,12 +249,12 @@ class WaterDrone:
     
 
     def inpollution_control(self):
-        mu = 0.000000001
+        mu = 0.01
         helm_msg = Helm()
         self.get_temperature()
         v = 0.4
         R_min = 0.5
-        u_max = 0.5
+        u_max = 0.2
         u_min = -u_max
         angle = 0
         prev_time = time.time()
@@ -273,7 +273,8 @@ class WaterDrone:
             print(f"pub yaw rate {helm_msg.yaw_rate}")
             print(f"looking_temp {self.looking_value_temp}")
             print(f"temp: {self.temperature}, delta: {delta}, sigma: {sigma}")
-            self.ax[0].plot(self.my_lat, self.my_lon, 'ro')
+            # self.ax[0].plot(self.my_lat, self.my_lon, 'ro')
+            self.ax.plot(self.my_lat, self.my_lon, 'ro')
             plt.draw()
             plt.pause(0.01)
             # n = n+1
