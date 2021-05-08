@@ -54,8 +54,11 @@ class WaterDrone:
             # CS = self.ax[0].contour(X, Y, temp)
             # self.ax[0].clabel(CS, inline=True, fontsize=10)
             # self.ax[0].set_title('Simplest default with labels')
-            CS = self.ax.contour(X, Y, temp)
-            self.ax.clabel(CS, inline=True, fontsize=10)
+            CS_common = self.ax.contour(X, Y, temp, 20)
+            CS_lvl = self.ax.contour(X, Y, temp, levels=[7.5], colors='b')
+
+            self.ax.clabel(CS_common, inline=True, fontsize=10)
+            self.ax.clabel(CS_lvl, inline=True, fontsize=10)
             self.ax.set_title('Simplest default with labels')
             plt.draw()
             plt.pause(0.01)
@@ -249,7 +252,7 @@ class WaterDrone:
     
 
     def inpollution_control(self):
-        mu = 0.01
+        mu = 0.1
         helm_msg = Helm()
         self.get_temperature()
         v = 0.4
@@ -267,7 +270,7 @@ class WaterDrone:
             u = 0.5*((1 - sigma)*u_min + (1 + sigma)*u_max)
             #angle = angle + (time.time() - prev_time)*u
             #prev_time = time.time()
-            helm_msg.thrust = 0.5
+            helm_msg.thrust = 0.8
             helm_msg.yaw_rate = u
             self.helm_pub.publish(helm_msg)
             print(f"pub yaw rate {helm_msg.yaw_rate}")
