@@ -3,7 +3,7 @@
 import folium
 import json
 
-map = folium.Map(location=[59.868842, 30.301311], zoom_start = 25)
+map = folium.Map(location=[47.621763, 9.422411], zoom_start = 10)
 
 with open("test_30|04.json", 'r') as f:
     for line in f:

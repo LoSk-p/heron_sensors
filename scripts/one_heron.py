@@ -15,7 +15,7 @@ import numpy as np
 
 class WaterDrone:
     def __init__(self, boat_nomber):
-        self.looking_value_temp = 7.5
+        self.looking_value_temp = 7.6
         self.with_pollution_looking = True
         self.boat_nomber = boat_nomber
         if self.boat_nomber == 0:
@@ -54,12 +54,14 @@ class WaterDrone:
             # CS = self.ax[0].contour(X, Y, temp)
             # self.ax[0].clabel(CS, inline=True, fontsize=10)
             # self.ax[0].set_title('Simplest default with labels')
-            CS_common = self.ax.contour(X, Y, temp, 20)
-            CS_lvl = self.ax.contour(X, Y, temp, levels=[7.5], colors='b')
+            CS_common = self.ax.contour(X, Y, temp, 30)
+            CS_lvl = self.ax.contour(X, Y, temp, levels=[7.6], colors='b')
 
             self.ax.clabel(CS_common, inline=True, fontsize=10)
             self.ax.clabel(CS_lvl, inline=True, fontsize=10)
-            self.ax.set_title('Simplest default with labels')
+            self.ax.set_title('Хождение по изолинии')
+            self.ax.set_xlabel("Широта, градусы")
+            self.ax.set_ylabel("Долгота, градусы")
             plt.draw()
             plt.pause(0.01)
 
