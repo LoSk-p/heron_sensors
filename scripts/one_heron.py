@@ -17,7 +17,7 @@ import numpy as np
 
 class WaterDrone:
     def __init__(self, boat_nomber):
-        self.real = False
+        self.real = True
         self.with_pollution_looking = False
         self.looking_value_temp = 7.5
         self.boat_nomber = boat_nomber
@@ -320,10 +320,10 @@ class WaterDrone:
         if self.real:
             if (data.orientation.w < -0.7) and (data.orientation.w > -1) and (data.orientation.z > 0):
                 angle = 2*math.acos(-data.orientation.w)
-                self.current_angle = self.change_angle(angle, 0)
+                self.current_angle = self.change_angle(angle, 0.5)
             else:
                 angle = 2*math.acos(data.orientation.w)
-                self.current_angle = self.change_angle(angle, 0)
+                self.current_angle = self.change_angle(angle, 0.5)
             print(f'get orientation {self.current_angle}')
         else:
             self.current_angle = 2*math.acos(data.orientation.w)
@@ -428,7 +428,7 @@ class WaterDrone:
             time.sleep(0.8)
 
             if self.real:
-                turn = int(1469 - 40*(self.current_angle - angle))   # left - 985 - 1951 - right
+                turn = int(1469 - 150*math.tanh(self.current_angle - angle))   # left - 985 - 1951 - right
                 go = int(1467 + forward*486)    # 985 - 1953
                 print(f'turn real turn: {turn}, go: {go}, cur - angle {self.current_angle - angle}')
                 print(f'angle {angle}, cur angle {self.current_angle}')
@@ -565,8 +565,8 @@ class WaterDrone:
                 # self.twist_pub.publish(twist_msg)
                 if self.real:
 
-                    turn = int(1469 - 60*(self.current_angle - self.current_line['angle']))   # left - 985 - 1951 - right
-                    go = 1467 + 100    # 985 - 1953
+                    turn = int(1469 - 150*math.tanh(self.current_angle - self.current_line['angle']))   # left - 985 - 1951 - right
+                    go = 1467 + 200    # 985 - 1953
                     print(f'go targets angle line {self.current_line["angle"]}, cur angle {self.current_angle}')
                     print(f'go targets go: {go}, turn {turn}')
                     rcin_msg.channels = [turn, 1466, go, 1469, 1467, 1954, 1467, 1502]
