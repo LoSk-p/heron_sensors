@@ -48,7 +48,7 @@ if with_pollution_looking:
     temp = temp.reshape((201, 201))
     temp = np.transpose(temp)
     print(f'temp: {temp}')
-    with open(f'{path}utils/ph-with-coords_new.csv', 'w') as f:
+    with open(f'{path}utils/ph-grid_new.csv', 'w') as f:
         for i in range(len(temp[0])):
             for j in range(len(temp)):
                 if lon[j] > 41.28:
@@ -63,7 +63,11 @@ if with_pollution_looking:
                     temp[j][i] -= 0.4
                 elif (lon[j] > 21.61) and (lon[j] < 27.35) and (lat[i] > 26.68) and (lat[i] < 29.4):
                     temp[j][i] += 0.25
-                f.write(f'{lat[i]};{lon[j]};{temp[i][j]}\n')
+                if j != (len(temp) - 1):
+                    f.write(f'{temp[i][j]};')
+                else:
+                    f.write(f'{temp[i][j]}')
+            f.write(f'\n')
             
             
     # self.fig, self.ax = plt.subplots(1, 2)
