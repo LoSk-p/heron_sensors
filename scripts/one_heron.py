@@ -17,8 +17,8 @@ import numpy as np
 
 class WaterDrone:
     def __init__(self, boat_nomber):
-        self.real = True
-        self.with_pollution_looking = False
+        self.real = False
+        self.with_pollution_looking = True
         self.looking_value_temp = 7.5
         self.boat_nomber = boat_nomber
         if self.boat_nomber == 0:
@@ -144,6 +144,7 @@ class WaterDrone:
         self.risk_zone = 1.5   # м, зона где дроны отходят друг от друга
         self.current_angle_coord = 0  # текущий угол вычисленный по координатам
         self.stopped = False
+        time.sleep(5000)
 
     # def look_herons(self):
     #     nodes = rosnode.get_node_names()
@@ -614,7 +615,7 @@ class WaterDrone:
                 
 if __name__ == '__main__':  
     try:  
-        drone = WaterDrone(1)
+        drone = WaterDrone(0)
         drone.go_targets()
     except KeyboardInterrupt:
         print("exception")

@@ -29,6 +29,11 @@ for i in range(boat_nomber):
             linsy[i].append(float(line[1]))
 for i in range(boat_nomber):
     plt.plot(linsx[i], linsy[i], color=colors[i])
+
+with open(f'{path}utils/ways/way2') as f:
+    for line in f:
+        js = literal_eval(line)
+        plt.plot(js["lat"], js["lon"], 'go')
 plt.show()
 
 # boat_nomber = 1
