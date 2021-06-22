@@ -4,6 +4,7 @@ import folium
 from folium import plugins
 import json
 
+
 map = folium.Map(location=[59.868842, 30.301311], zoom_start = 25)
 
 gridgroup = folium.FeatureGroup(name='Grid_Layer', control=True)
@@ -12,7 +13,7 @@ pointsgroup = folium.FeatureGroup(name='Points_Layer', control=True)
 # marker_cluster = plugins.MarkerCluster().add_to(pointsgroup)
 lat = {}
 lon = {}
-ph = {}
+ph = {}routegroup
 temp = {}
 cond = {}
 
