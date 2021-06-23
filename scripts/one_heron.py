@@ -15,7 +15,7 @@ import numpy as np
 
 class WaterDrone:
     def __init__(self, boat_nomber):
-        self.looking_value_temp = 7.6
+        self.looking_value_temp = 7.5
         self.with_pollution_looking = True
         self.boat_nomber = boat_nomber
         if self.boat_nomber == 0:
@@ -32,7 +32,7 @@ class WaterDrone:
             x0 = 49.89973114614826
             y0 = 8.900325679552948
             r = 0.0002
-            with open(f'{self.path}utils/ph-with-coords.csv') as map_temp:
+            with open(f'{self.path}utils/ph-with-coords_new.csv') as map_temp:
                 lat = []
                 lon = []
                 temp = []
@@ -55,7 +55,7 @@ class WaterDrone:
             # self.ax[0].clabel(CS, inline=True, fontsize=10)
             # self.ax[0].set_title('Simplest default with labels')
             CS_common = self.ax.contour(X, Y, temp, 30)
-            CS_lvl = self.ax.contour(X, Y, temp, levels=[7.6], colors='b')
+            CS_lvl = self.ax.contour(X, Y, temp, levels=[7.5], colors='b')
 
             self.ax.clabel(CS_common, inline=True, fontsize=10)
             self.ax.clabel(CS_lvl, inline=True, fontsize=10)
@@ -254,7 +254,7 @@ class WaterDrone:
     
 
     def inpollution_control(self):
-        mu = 0.1
+        mu = 0.000000001
         helm_msg = Helm()
         self.get_temperature()
         v = 0.4
@@ -282,6 +282,9 @@ class WaterDrone:
             self.ax.plot(self.my_lat, self.my_lon, 'ro', markersize=1)
             plt.draw()
             plt.pause(0.01)
+            f_err = open("error", "a")
+            f_err.write(f'{time.time()}; {self.looking_value_temp - self.temperature}\n')
+
             # n = n+1
         
         # plt.figure(2)
