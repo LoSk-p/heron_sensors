@@ -36,17 +36,29 @@ class WaterDrone:
                 lat = []
                 lon = []
                 temp = []
-                for line in map_temp:
-                    line = line.split(';')
+                r = 0.0002
+                lat = np.arange(49.8988, 49.8988 + 201*5.47*10**(-6), 5.47*10**(-6))
+                lon = np.arange(8.89844, 8.89844 + 201*1.612*10**(-5), 1.612*10**(-5))         
+                print(f'lat {lat}')
+                # for line in map_temp:
+                #     line = line.split(';')
                     # lat.append(float(line[0])*5.47*10**(-6) + 49.8988)
                     # lon.append(float(line[1])*1.612*10**(-5) + 8.89844)
-                    temp.append(float(line[2]))
-            lat = np.arange(49.8988, 49.8988 + 201*5.47*10**(-6), 5.47*10**(-6))
-            lon = np.arange(8.89844, 8.89844 + 201*1.612*10**(-5), 1.612*10**(-5))
-            print(f'lat {lat}')
+                    # temp.append(float(line[2]))
+                
+                for i in range(len(lat)):
+                    if r**2 >= ((lat[i] - x0)**2 + (lon[i]-y0)**2):
+                        temp.append(((lat[i] - x0)**2 ) + (lon[i] - y0)**2)*(10**(8))
+                        print(temp)
+
+                    else:
+                        temp.append(20) 
+                    
+            
             X, Y = np.meshgrid(lat, lon)
             print(f'X, Y {X}, {Y}')
             temp = np.array(temp)
+            print(temp)
             temp = temp.reshape((201, 201))
             temp = np.transpose(temp)
             # self.fig, self.ax = plt.subplots(1, 2)
