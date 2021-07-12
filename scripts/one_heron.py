@@ -43,8 +43,10 @@ class WaterDrone:
                 for line in map_temp:
                     line = line.split(';')
                     print(line)
-                    lat.append(int(line[0])*8.81*10**(-7) + 49.8988)
-                    lon.append(int(line[1])*2.5962*10**(-6) + 8.89844)
+                    if (int(line[0])*8.81*10**(-7) + 49.8988) not in lat:
+                        lat.append(int(line[0])*8.81*10**(-7) + 49.8988)
+                    if (int(line[1])*2.5962*10**(-6) + 8.89844) not in lon:
+                        lon.append(int(line[1])*2.5962*10**(-6) + 8.89844)
                     temp.append(float(line[2]))
                 
                 # for i in range(len(lat)):
