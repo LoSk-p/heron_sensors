@@ -43,7 +43,7 @@ with open('ph-may-grid.csv', 'w') as f:
     for line in zz:
         x = 0
         for l in line:
-            print(zz[y][x])
+            #print(zz[y][x])
             f.write(f"{str(x)};{str(y)};{str(zz[y][x])}\n")
-            x += 0.25
-        y += 0.25
+            x += 1
+        y += 1

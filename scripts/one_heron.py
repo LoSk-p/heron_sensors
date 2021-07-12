@@ -32,34 +32,36 @@ class WaterDrone:
             x0 = 49.89973114614826
             y0 = 8.900325679552948
             r = 0.0002
-            with open(f'{self.path}utils/ph-with-coords_new.csv') as map_temp:
+            with open(f'{self.path}utils/ph-may-grid.csv') as map_temp:
                 lat = []
                 lon = []
                 temp = []
                 r = 0.0002
-                lat = np.arange(49.8988, 49.8988 + 201*5.47*10**(-6), 5.47*10**(-6))
-                lon = np.arange(8.89844, 8.89844 + 201*1.612*10**(-5), 1.612*10**(-5))         
+                # lat = np.arange(49.8988, 49.8988 + 201*5.47*10**(-6), 5.47*10**(-6))   # 49.8998995
+                # lon = np.arange(8.89844, 8.89844 + 201*1.612*10**(-5), 1.612*10**(-5))    # 8.9016801     
                 print(f'lat {lat}')
-                # for line in map_temp:
-                #     line = line.split(';')
-                    # lat.append(float(line[0])*5.47*10**(-6) + 49.8988)
-                    # lon.append(float(line[1])*1.612*10**(-5) + 8.89844)
-                    # temp.append(float(line[2]))
+                for line in map_temp:
+                    line = line.split(';')
+                    print(line)
+                    lat.append(int(line[0])*8.81*10**(-7) + 49.8988)
+                    lon.append(int(line[1])*2.5962*10**(-6) + 8.89844)
+                    temp.append(float(line[2]))
                 
-                for i in range(len(lat)):
-                    if r**2 >= ((lat[i] - x0)**2 + (lon[i]-y0)**2):
-                        temp.append(((lat[i] - x0)**2 ) + (lon[i] - y0)**2)*(10**(8))
-                        print(temp)
+                # for i in range(len(lat)):
+                #     if r**2 >= ((lat[i] - x0)**2 + (lon[i]-y0)**2):
+                #         temp.append(((lat[i] - x0)**2 ) + (lon[i] - y0)**2)*(10**(8))
+                #         print(temp)
 
-                    else:
-                        temp.append(20) 
+                #     else:
+                #         temp.append(20) 
                     
             
             X, Y = np.meshgrid(lat, lon)
             print(f'X, Y {X}, {Y}')
             temp = np.array(temp)
             print(temp)
-            temp = temp.reshape((201, 201))
+            temp = temp.reshape((719, 719))
+            #temp = temp.reshape((201, 201))
             temp = np.transpose(temp)
             # self.fig, self.ax = plt.subplots(1, 2)
             self.fig, self.ax = plt.subplots()
