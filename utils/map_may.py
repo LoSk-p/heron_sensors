@@ -15,13 +15,13 @@ with open(f'{path}utils/test-may2', 'r') as f:
 i = 0
 lat = []
 lon = []
-ph = []
+temp = []
 for line in lines:
     line = line.strip()
     line = literal_eval(line)
     lat.append(float(line['lat']))
     lon.append(float(line['lon']))
-    ph.append(float(line['ph']))
+    temp.append(float(line['temperature']))
 
 # print(len(lat))
 # print(len(lon))
@@ -31,7 +31,7 @@ longitude = np.arange(min(lon), max(lon), 0.000001)
 
 xx, yy = np.meshgrid(latitude, longitude)
 
-spline = interpolate.Rbf(lat,lon,ph,function='multiquadric',smooth=1, episilon=1)
+spline = interpolate.Rbf(lat,lon,temp,function='multiquadric',smooth=1, episilon=1)
 zz = spline(xx,yy)
 print(zz)
 dataMatrix = np.matrix(zz)

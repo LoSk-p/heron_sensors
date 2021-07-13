@@ -62,7 +62,7 @@ class WaterDrone:
             print(f'X, Y {X}, {Y}')
             temp = np.array(temp)
             print(temp)
-            temp = temp.reshape((719, 719))
+            temp = temp.reshape((414, 1249))
             #temp = temp.reshape((201, 201))
             temp = np.transpose(temp)
             # self.fig, self.ax = plt.subplots(1, 2)
@@ -70,7 +70,8 @@ class WaterDrone:
             # CS = self.ax[0].contour(X, Y, temp)
             # self.ax[0].clabel(CS, inline=True, fontsize=10)
             # self.ax[0].set_title('Simplest default with labels')
-            CS_common = self.ax.contour(X, Y, temp, 30)
+            print(f'x shape {X.shape} z shape {temp.shape}')
+            CS_common = self.ax.contour(X, Y, temp, 10)
             CS_lvl = self.ax.contour(X, Y, temp, levels=[7.5], colors='b')
 
             self.ax.clabel(CS_common, inline=True, fontsize=10)
