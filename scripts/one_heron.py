@@ -15,7 +15,7 @@ import numpy as np
 
 class WaterDrone:
     def __init__(self, boat_nomber):
-        self.looking_value_temp = 7.5
+        self.looking_value_temp = 8.4
         self.with_pollution_looking = True
         self.boat_nomber = boat_nomber
         if self.boat_nomber == 0:
@@ -29,24 +29,33 @@ class WaterDrone:
             f = open(f'{self.path}utils/pollution_borders', 'w')
             time.sleep(2)
             f.close()
-            x0 = 49.89973114614826
-            y0 = 8.900325679552948
-            r = 0.0002
+            x0 = 49.8988
+            self.x_min = x0
+            y0 = 8.89844
+            self.y_min = y0
+            x1 = 49.8998995
+            y1 = 8.90168012
+            shape_x = 413 + 1
+            shape_y = 1248 + 1
+            step_x = (x1 - x0)/shape_x
+            self.x_step = step_x
+            step_y = (y1 - y0)/shape_y
+            self.y_step = step_y
             with open(f'{self.path}utils/ph-may-grid.csv') as map_temp:
                 lat = []
                 lon = []
                 temp = []
                 r = 0.0002
-                # lat = np.arange(49.8988, 49.8988 + 201*5.47*10**(-6), 5.47*10**(-6))   # 49.8998995
-                # lon = np.arange(8.89844, 8.89844 + 201*1.612*10**(-5), 1.612*10**(-5))    # 8.9016801     
+                lat = np.arange(x0, x1, step_x)   # 49.8998995
+                lon = np.arange(y0, y1, step_y)    # 8.9016801     
                 print(f'lat {lat}')
                 for line in map_temp:
                     line = line.split(';')
                     print(line)
-                    if (int(line[0])*8.81*10**(-7) + 49.8988) not in lat:
-                        lat.append(int(line[0])*8.81*10**(-7) + 49.8988)
-                    if (int(line[1])*2.5962*10**(-6) + 8.89844) not in lon:
-                        lon.append(int(line[1])*2.5962*10**(-6) + 8.89844)
+                    # if (int(line[0])*step_x + x0) not in lat:
+                    #     lat.append(int(line[0])*step_x + x0)
+                    # if (int(line[1])*step_y + y0) not in lon:
+                    #     lon.append(int(line[1])*step_y + y0)
                     temp.append(float(line[2]))
                 
                 # for i in range(len(lat)):
@@ -58,11 +67,12 @@ class WaterDrone:
                 #         temp.append(20) 
                     
             
-            X, Y = np.meshgrid(lat, lon)
+            Y, X = np.meshgrid(lon, lat)
             print(f'X, Y {X}, {Y}')
             temp = np.array(temp)
-            print(temp)
-            temp = temp.reshape((414, 1249))
+            print(f"temp {temp}")
+            temp = temp.reshape((shape_y, shape_x))
+            print(f"temp reshaped {temp}")
             #temp = temp.reshape((201, 201))
             temp = np.transpose(temp)
             # self.fig, self.ax = plt.subplots(1, 2)
@@ -72,7 +82,7 @@ class WaterDrone:
             # self.ax[0].set_title('Simplest default with labels')
             print(f'x shape {X.shape} z shape {temp.shape}')
             CS_common = self.ax.contour(X, Y, temp, 10)
-            CS_lvl = self.ax.contour(X, Y, temp, levels=[7.5], colors='b')
+            CS_lvl = self.ax.contour(X, Y, temp, levels=[self.looking_value_temp], colors='b')
 
             self.ax.clabel(CS_common, inline=True, fontsize=10)
             self.ax.clabel(CS_lvl, inline=True, fontsize=10)
@@ -81,6 +91,7 @@ class WaterDrone:
             self.ax.set_ylabel("Долгота, градусы")
             plt.draw()
             plt.pause(0.01)
+            #time.sleep(1000)
 
                 # for line in map_temp:
                 #     line = line.split(';')
@@ -153,15 +164,16 @@ class WaterDrone:
     #                 break
 
     def get_temperature(self):
-        with open(f'{self.path}utils/ph-grid.csv') as map_temp:
+        with open(f'{self.path}utils/ph_may.txt') as map_temp:
             print(f'temp my lat {self.my_lat}, lon {self.my_lon}')
             y = 0
             for line in map_temp:
                 x = 0
-                col = line.split(';')
+                #col = line.split(';')
+                col = line.split()
                 for temp in col:
-                    lat = float(x)*5.47*10**(-6) + 49.8988
-                    lon = float(y)*1.612*10**(-5) + 8.89844
+                    lat = float(x)*self.x_step + self.x_min
+                    lon = float(y)*self.y_step + self.y_min
                     #print(f'temp err_abs {abs(self.my_lat - lat)}, lon {abs(self.my_lon - lon)}')
                     #print(f'temp coord file {lat}, lon {lon}')
                     if (abs(self.my_lat - lat) < self.err_temp_coord) and (abs(self.my_lon - lon) < self.err_temp_coord):
@@ -271,12 +283,12 @@ class WaterDrone:
     
 
     def inpollution_control(self):
-        mu = 0.000000001
+        mu = 0.001
         helm_msg = Helm()
         self.get_temperature()
         v = 0.4
         R_min = 0.5
-        u_max = 1
+        u_max = 0.5
         u_min = -u_max
         angle = 0
         prev_time = time.time()
