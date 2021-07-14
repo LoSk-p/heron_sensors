@@ -5,6 +5,8 @@ import os
 from ast import literal_eval
 import numpy as np
 from scipy import interpolate
+import matplotlib.ticker as ticker
+from mpl_toolkits.mplot3d import Axes3D
 
 
 path = os.path.realpath(__file__)[:-16]
@@ -21,7 +23,7 @@ for line in lines:
     line = literal_eval(line)
     lat.append(float(line['lat']))
     lon.append(float(line['lon']))
-    temp.append(float(line['ph']))
+    temp.append(float(line['temperature']))
 
 # print(len(lat))
 # print(len(lon))
@@ -47,3 +49,13 @@ with open('ph-may-grid.csv', 'w') as f:
             f.write(f"{str(x)};{str(y)};{str(zz[y][x])}\n")
             x += 1
         y += 1
+
+fig = plt.figure()
+fig.suptitle('pH level')
+ax = fig.add_subplot(111, projection='3d')
+#ax.scatter3D(lon, lat, ph, c='r')
+ax.plot_wireframe(xx, yy, zz)
+ax.plot_surface(xx, yy, zz,alpha=0.2)
+ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.4f'))
+ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%.4f'))
+plt.show()

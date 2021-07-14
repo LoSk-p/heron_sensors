@@ -15,7 +15,7 @@ import numpy as np
 
 class WaterDrone:
     def __init__(self, boat_nomber):
-        self.looking_value_temp = 8.4
+        self.looking_value_temp = 16
         self.with_pollution_looking = True
         self.boat_nomber = boat_nomber
         if self.boat_nomber == 0:
@@ -81,7 +81,7 @@ class WaterDrone:
             # self.ax[0].clabel(CS, inline=True, fontsize=10)
             # self.ax[0].set_title('Simplest default with labels')
             print(f'x shape {X.shape} z shape {temp.shape}')
-            CS_common = self.ax.contour(X, Y, temp, 10)
+            CS_common = self.ax.contour(X, Y, temp, 15)
             CS_lvl = self.ax.contour(X, Y, temp, levels=[self.looking_value_temp], colors='b')
 
             self.ax.clabel(CS_common, inline=True, fontsize=10)
@@ -130,7 +130,7 @@ class WaterDrone:
         self.err_m = 4             # Ошибка GPS м
         self.err_lat = self.err_m/self.k_lat
         self.err_lon = self.err_m/self.k_lon
-        self.err_temp_coord = 0.00002     # Ошибка GPS для поиска температуры по файлу
+        self.err_temp_coord = 0.000002     # Ошибка GPS для поиска температуры по файлу
         self.err_temp = 2 # in grad
         self.normal_temp = 20
         self.temperature = 20
@@ -286,9 +286,7 @@ class WaterDrone:
         mu = 0.01
         helm_msg = Helm()
         self.get_temperature()
-        v = 0.4
-        R_min = 0.5
-        u_max = -0.5
+        u_max = -0.3
         u_min = -u_max
         angle = 0
         prev_time = time.time()
@@ -311,8 +309,9 @@ class WaterDrone:
             self.ax.plot(self.my_lat, self.my_lon, 'ro', markersize=1)
             plt.draw()
             plt.pause(0.01)
-            f_err = open("error", "a")
-            f_err.write(f'{time.time()}; {self.looking_value_temp - self.temperature}\n')
+            log = {"lat": self.my_lat, "lon": self.my_lon, "value": self.temperature}
+            with open(f"{self.path}utils/logs", "a") as f:
+                f.write(f'{log}\n')
 
             # n = n+1
         
@@ -342,7 +341,7 @@ class WaterDrone:
         #plt.figure()
         #plt.ion()
         #plt.show()
-        f1 = open(f'{self.path}/utils/{self.boat_nomber}coord-err-1m', 'w')
+        f1 = open(f'{self.path}/utils/{self.boat_nomber}coords_t', 'w')
         f2 = open(f'{self.path}/utils/{self.boat_nomber}coord-final-err-1m', 'w')
         final_coord = [[],[]]
         coords = []
@@ -422,7 +421,8 @@ class WaterDrone:
             # self.course_pub.publish(course_mess)
             final_coord[0].append(self.my_lat)
             final_coord[1].append(self.my_lon)
-            f2.write(f'{self.my_lat}; {self.my_lon}\n')
+            log = {"lat": self.my_lat, "lon": self.my_lon, "value": self.temperature}
+            f2.write(f'{log}\n')
             time.sleep(2)
         print(f'final_coord = {final_coord}')
         f1.close()
@@ -436,7 +436,8 @@ class WaterDrone:
 if __name__ == '__main__':  
     try:  
         drone = WaterDrone(0)
-        drone.go_targets()
+        #drone.go_targets()
+        drone.inpollution_control()
     except KeyboardInterrupt:
         print("exception")
         exit()
