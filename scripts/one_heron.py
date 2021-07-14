@@ -283,12 +283,12 @@ class WaterDrone:
     
 
     def inpollution_control(self):
-        mu = 0.001
+        mu = 0.01
         helm_msg = Helm()
         self.get_temperature()
         v = 0.4
         R_min = 0.5
-        u_max = 0.5
+        u_max = -0.5
         u_min = -u_max
         angle = 0
         prev_time = time.time()
@@ -301,7 +301,7 @@ class WaterDrone:
             u = 0.5*((1 - sigma)*u_min + (1 + sigma)*u_max)
             #angle = angle + (time.time() - prev_time)*u
             #prev_time = time.time()
-            helm_msg.thrust = 0.8
+            helm_msg.thrust = 0.3
             helm_msg.yaw_rate = u
             self.helm_pub.publish(helm_msg)
             print(f"pub yaw rate {helm_msg.yaw_rate}")
@@ -374,7 +374,7 @@ class WaterDrone:
                 #print(f'temperature = {self.temperature}')
                 if self.with_pollution_looking:
                     #if abs(self.temperature - self.normal_temp) > self.err_temp:
-                    if abs(self.temperature - self.looking_value_temp) < 0.02:
+                    if abs(self.temperature - self.looking_value_temp) < 0.04:
                         try:
                             with open(f'{self.path}utils/pollution_borders') as f3:
                                 for line in f3:
