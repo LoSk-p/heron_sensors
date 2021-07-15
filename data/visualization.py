@@ -13,7 +13,7 @@ pointsgroup = folium.FeatureGroup(name='Points_Layer', control=True)
 # marker_cluster = plugins.MarkerCluster().add_to(pointsgroup)
 lat = {}
 lon = {}
-ph = {}routegroup
+ph = {}
 temp = {}
 cond = {}
 
