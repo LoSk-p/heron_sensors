@@ -15,7 +15,7 @@ sudo apt-get install python3-empy
 Install heron repositories:
 ```bash
 cd catkin_ws/src
-git clone https://github.com/heron/heron_simulator
+git clone https://github.com/heron/heron_simulator.git
 git clone https://github.com/heron/heron.git
 git clone https://github.com/heron/heron_controller.git
 git clone https://github.com/heron/heron_desktop.git
