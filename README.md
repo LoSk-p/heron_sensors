@@ -3,10 +3,18 @@ Water drone traverses a given area and get data about temperature from temperatu
 Gazebo simulation was given from https://github.com/heron
 
 ## Repo structure
+
+scripts/
+* drone_control.py -- main script for drone control 
+
 utils/
-    ways - trajectories for meandr
-    map - parsed data for simulation 
-    experimental_data - unparsed data from experiments
+   - ways/ -- trajectories for meandr
+   *  map/ -- parsed data for simulation 
+   * experimental_data/ -- unparsed data from experiments
+   * devide_area.py -- devide the area for several parts (use for several  drones)
+   * map_creation.py -- create a simulation map from experimental data
+   * trajectory_creation.py -- create points for meandr 
+
 
 ## Installation
 
@@ -46,9 +54,9 @@ source ~/catkin_ws/devel/setup.bash
 
 ## Create way
 In `utils/borders` write coordinates of your border's points.
-Run `way_lodka.py`:
+Run `trajectory_creation`:
 ```
-rosrun heron_sensors way_lodka.py
+rosrun heron_sensors trajectory_creation.py
 ```
 ## Run
 Run Gazebo simulation:
@@ -57,5 +65,5 @@ roslaunch heron_gazebo heron_lake_world.launch
 ```
 Run control package:
 ```bash
-rosrun heron_sensors one_heron.py
+rosrun heron_sensors drone_control.py
 ```
