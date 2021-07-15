@@ -2,6 +2,12 @@
 Water drone traverses a given area and get data about temperature from temperature map.
 Gazebo simulation was given from https://github.com/heron
 
+## Repo structure
+utils/
+    ways - trajectories for meandr
+    map - parsed data for simulation 
+    experimental_data - unparsed data from experiments
+
 ## Installation
 
 Required dependencies:
