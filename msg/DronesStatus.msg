@@ -1,0 +1,4 @@
+int32 boat_number
+float64 latitude
+float64 longitude
+float32 temperature
