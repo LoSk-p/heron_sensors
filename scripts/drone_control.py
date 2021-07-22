@@ -289,13 +289,13 @@ class WaterDrone:
     
 
     def inpollution_control(self):
-        mu = 0.01
+        mu = 0.001
         helm_msg = Helm()
         rcin_msg = OverrideRCIn()
         self.get_temperature()
-        u_max = -0.3
+        u_max = 0.15
         u_min = -u_max
-        th = 0.3
+        th = 0.15
         angle = 0
         prev_time = time.time()
         # n = 0
@@ -483,8 +483,8 @@ class WaterDrone:
 if __name__ == '__main__':  
     try:  
         drone = WaterDrone(0)
-        drone.go_targets()
-        #drone.inpollution_control()
+#        drone.go_targets()
+        drone.inpollution_control()
     except KeyboardInterrupt:
         rospy.loginfo("exception")
         exit()
