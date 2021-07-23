@@ -13,6 +13,7 @@ import os
 from ast import literal_eval
 import numpy as np
 from datetime import datetime
+import random
 
 class WaterDrone:
     def __init__(self, boat_number):
@@ -224,6 +225,8 @@ class WaterDrone:
             self.drones_status[f'{data.boat_number}'] = {'lat': data.latitude, 'lon': data.longitude, 'temp': data.temperature}
 
     def get_temperature(self):
+        noise = random.gauss(0, 0.01)
+        rospy.loginfo(f"temp noise = {noise}")
         with open(f'{self.path}utils/map/for_control') as map_temp:
             rospy.loginfo(f'temp my lat {self.my_lat}, lon {self.my_lon}')
             y = 0
@@ -235,7 +238,7 @@ class WaterDrone:
                     lat = float(x)*self.x_step + self.x_min
                     lon = float(y)*self.y_step + self.y_min
                     if (abs(self.my_lat - lat) < self.err_temp_coord) and (abs(self.my_lon - lon) < self.err_temp_coord):
-                        self.temperature = float(temp)
+                        self.temperature = float(temp) + noise
                         rospy.loginfo(f'get_temperature, temperature = {self.temperature}')
                         #break
                         return
