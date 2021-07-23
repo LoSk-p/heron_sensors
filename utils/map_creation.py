@@ -57,7 +57,7 @@ def map_creation():
         line = literal_eval(line)
         lat.append(float(line['lat']))
         lon.append(float(line['lon']))
-        temp.append(float(line['temperature']))
+        temp.append(float(line['ph']))
 
     latitude = np.arange(min(lat), max(lat), 0.000001)
     longitude = np.arange(min(lon), max(lon), 0.000001)

@@ -17,7 +17,7 @@ from datetime import datetime
 class WaterDrone:
     def __init__(self, boat_number):
         self.real = False
-        self.looking_value_temp = 16
+        self.looking_value_temp = 8.4
         self.with_pollution_looking = True
         self.boat_number = boat_number
         if self.boat_number == 0:
@@ -67,7 +67,7 @@ class WaterDrone:
             temp = np.transpose(temp)
             self.fig, self.ax = plt.subplots()
             rospy.loginfo(f'x shape {X.shape} z shape {temp.shape}')
-            CS_common = self.ax.contour(X, Y, temp, 15)
+            CS_common = self.ax.contour(X, Y, temp, 25)
             CS_lvl = self.ax.contour(X, Y, temp, levels=[self.looking_value_temp], colors='b')
 
             self.ax.clabel(CS_common, inline=True, fontsize=10)
@@ -289,11 +289,11 @@ class WaterDrone:
     
 
     def inpollution_control(self):
-        mu = 0.001
+        mu = 0.02
         helm_msg = Helm()
         rcin_msg = OverrideRCIn()
         self.get_temperature()
-        u_max = 0.15
+        u_max = -0.15
         u_min = -u_max
         th = 0.15
         angle = 0
