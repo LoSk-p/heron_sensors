@@ -18,9 +18,10 @@ import rospkg
 
 class WaterDrone:
     def __init__(self, boat_number):
-        self.real = False
+        self.real = False       # Control real boat
+        self.waves = True      # Generate waves
         self.looking_value_temp = 8.4
-        self.with_pollution_looking = True
+        self.with_pollution_looking = True      # Look for izoline
         self.boat_number = boat_number
         if self.boat_number == 0:
             self.prefix = ''
@@ -146,10 +147,15 @@ class WaterDrone:
         else:
             plus_lat = 0
             plus_lon = 0
+        if self.waves:
+            wave = 0.000004*(math.sin(1000*(data.latitude + plus_lat)) + math.sin(1000*(data.longitude + plus_lon)))
+            rospy.loginfo(f"Wave: {wave}")
+        else: 
+            wave = 0
         dif_lat = data.latitude - self.my_lat + plus_lat
         dif_lon = data.longitude - self.my_lon + plus_lon
-        self.my_lat = data.latitude + plus_lat
-        self.my_lon = data.longitude + plus_lon
+        self.my_lat = data.latitude + plus_lat + wave
+        self.my_lon = data.longitude + plus_lon + wave
         
         angle = math.pi/2 - math.atan2(dif_lon, dif_lat)
         if angle < 0:
