@@ -9,14 +9,17 @@ import matplotlib.pyplot as plt
 import os
 from ast import literal_eval
 import shutil
+import rospkg
 
 #x = [49.8995632732, 49.8992564727, 49.899885637, 49.8999917653, 49.8998692169]
 #y = [8.89912952085, 8.90169695784, 8.90068128035, 8.90012873463, 8.89840325559]
-path = os.path.realpath(__file__)[:-28]
-shutil.rmtree(f'{path}utils/ways/')
-os.mkdir(f'{path}utils/ways')
+rospack = rospkg.RosPack()
+rospack.list() 
+path = rospack.get_path('heron_sensors')
+shutil.rmtree(f'{path}/utils/ways/')
+os.mkdir(f'{path}/utils/ways')
 nom_area = 0
-with open(f'{path}utils/borders_several') as f:
+with open(f'{path}/utils/borders_several') as f:
     for line in f:
         x = []
         y = []
@@ -116,7 +119,7 @@ with open(f'{path}utils/borders_several') as f:
                 way.append({'lat': x_boat2, 'lon': y_boat})
                 #print([x_boat2, y_boat])
         print(nom_area)
-        with open(f'{path}utils/ways/way{nom_area}', 'w') as f:
+        with open(f'{path}/utils/ways/way{nom_area}', 'w') as f:
             for coord in way:
                 f.write(f'{coord}\n')
         nom_area += 1

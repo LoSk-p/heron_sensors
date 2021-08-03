@@ -12,16 +12,19 @@ import rosnode
 import math
 import matplotlib.pyplot as plt
 from ast import literal_eval
+import rospkg
 
 boat_number = 3
-path = os.path.realpath(__file__)[:-22]
+rospack = rospkg.RosPack()
+rospack.list() 
+path = rospack.get_path('heron_sensors')
 linsx = [[],[],[]]
 linsy = [[],[],[]]
 colors = ['r', 'b', 'g']
 for i in range(boat_number):
     color = colors[i]
 
-    with open(f'{path}utils/logs/{os.argv[1]}_{i}') as f:
+    with open(f'{path}/utils/logs/{os.argv[1]}_{i}') as f:
         for line in f:
             line = line.split(';')
             # js = literal_eval(line)
