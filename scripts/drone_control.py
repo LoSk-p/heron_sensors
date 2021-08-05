@@ -76,9 +76,9 @@ class WaterDrone:
 
             self.ax.clabel(CS_common, inline=True, fontsize=10)
             self.ax.clabel(CS_lvl, inline=True, fontsize=10)
-            self.ax.set_title('Хождение по изолинии')
-            self.ax.set_xlabel("Широта, градусы")
-            self.ax.set_ylabel("Долгота, градусы")
+            self.ax.set_title('Isoline follow')
+            self.ax.set_xlabel("Latitude, °")
+            self.ax.set_ylabel("Долгота, °")
             plt.draw()
             plt.pause(0.01)
             
@@ -138,6 +138,7 @@ class WaterDrone:
         self.current_angle_coord = 0  # текущий угол вычисленный по координатам
         self.stopped = False
         self.noise = 0
+        self.wave = 0
 
 
     def get_coord(self, data):
@@ -148,14 +149,14 @@ class WaterDrone:
             plus_lat = 0
             plus_lon = 0
         if self.waves:
-            wave = 0.000004*(math.sin(1000*(data.latitude + plus_lat)) + math.sin(1000*(data.longitude + plus_lon)))
-            rospy.loginfo(f"Wave: {wave}")
+            self.wave = 0.000008*(math.sin(1000*(data.latitude + plus_lat)) + math.sin(1000*(data.longitude + plus_lon)))
+            #rospy.loginfo(f"Wave: {self.wave}")
         else: 
-            wave = 0
+            self.wave = 0
         dif_lat = data.latitude - self.my_lat + plus_lat
         dif_lon = data.longitude - self.my_lon + plus_lon
-        self.my_lat = data.latitude + plus_lat + wave
-        self.my_lon = data.longitude + plus_lon + wave
+        self.my_lat = data.latitude + plus_lat + self.wave
+        self.my_lon = data.longitude + plus_lon + self.wave
         
         angle = math.pi/2 - math.atan2(dif_lon, dif_lat)
         if angle < 0:
@@ -211,16 +212,16 @@ class WaterDrone:
                     self.turn(req_angle, 0.4, file=file)
         print('collision control end')
 
-    def is_risk(self, nomber, lat, lon):
-        if nomber != self.boat_number:
+    def is_risk(self, number, lat, lon):
+        if number != self.boat_number:
             print(f'is risk my_lat - lat: {self.my_lat - lat} er: {self.risk_zone/self.k_lat}, lon: {self.my_lon - lon}, er: {self.risk_zone*10/self.k_lon}')
             if (abs(self.my_lat - lat) < self.risk_zone/self.k_lat) and (abs(self.my_lon - lon) < self.risk_zone*10/self.k_lon):
-                if nomber not in self.risk:
-                    self.risk.append(nomber)
+                if number not in self.risk:
+                    self.risk.append(number)
                     print(f'risk append {self.risk}')
             else:
-                if nomber in self.risk:
-                    self.risk.remove(nomber)
+                if number in self.risk:
+                    self.risk.remove(number)
                     print(f'risk remove {self.risk}')
 
 
@@ -234,7 +235,7 @@ class WaterDrone:
             self.drones_status[f'{data.boat_number}'] = {'lat': data.latitude, 'lon': data.longitude, 'temp': data.temperature}
 
     def get_temperature(self):
-        self.noise = random.gauss(0, 0)
+        self.noise = random.gauss(0, 0.01)
         rospy.loginfo(f"temp noise = {self.noise}")
         n = 4
         temp_sum = 0
@@ -259,7 +260,10 @@ class WaterDrone:
                             #return
                         x += 1
                     y += 1
-        self.temperature = temp_sum/temp_num
+        try:
+            self.temperature = temp_sum/temp_num
+        except:
+            self.temperature = 0
                 
     def line(self, target_lat, target_lon):
         # lon = k*lat + b
@@ -340,8 +344,7 @@ class WaterDrone:
             self.ax.plot(self.my_lat, self.my_lon, 'ro', markersize=1)
             plt.draw()
             plt.pause(0.01)
-            log = {"lat": self.my_lat, "lon": self.my_lon, "value": self.temperature, "noise": self.noise}
-            self.log_file.write(f'{log}\n')
+            self.write_log()
 
     def stop(self):
         print('stop')
@@ -380,6 +383,10 @@ class WaterDrone:
         status_msg.temperature = self.temperature
         self.status_pub.publish(status_msg)
 
+    def write_log(self):
+        log = {"lat": self.my_lat, "lon": self.my_lon, "value": self.temperature, "noise": self.noise, "wave": self.wave}
+        self.log_file.write(f'{log}\n')
+
 
     def turn(self, angle, forward):
         self.stopped = False
@@ -408,8 +415,7 @@ class WaterDrone:
             self.ax.plot(self.my_lat, self.my_lon, 'ro')
             plt.draw()
             plt.pause(0.001)
-            log = {"lat": self.my_lat, "lon": self.my_lon, "value": self.temperature, "noise": self.noise}
-            self.log_file.write(f'{log}\n')
+            self.write_log()
 
             self.pub_status()
 
@@ -494,8 +500,7 @@ class WaterDrone:
                 plt.draw()
                 plt.pause(0.001)
                 time.sleep(2)
-            log = {"lat": self.my_lat, "lon": self.my_lon, "value": self.temperature, "noise": self.noise}
-            self.log_file.write(f'{log}\n')
+            self.write_log()
             time.sleep(2)
 
                 

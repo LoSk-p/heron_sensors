@@ -51,9 +51,9 @@ areas = [[]]
 for i in range(len(x)):
     areas[0].append({'lat': x[i], 'lon': y[i]})
 #print(areas[0])
-area_nomber = 0
+area_number = 0
 
-while area_nomber < boat_number - 1:
+while area_number < boat_number - 1:
     max_x = -5
     max_y = -5
     min_x = 1000
@@ -105,7 +105,7 @@ while area_nomber < boat_number - 1:
         areas.pop(area_nom)
         areas.insert(0, obl1)
         areas.insert(0, obl2)
-        area_nomber += 1
+        area_number += 1
     else:
         logging.debug(f'area[nom] {areas[area_nom]}')
         logging.debug(f'dlin min_y {min_y}, max_y {max_y}')
@@ -144,7 +144,7 @@ while area_nomber < boat_number - 1:
         areas.pop(area_nom)
         areas.insert(0, obl1)
         areas.insert(0, obl2)
-        area_nomber += 1
+        area_number += 1
             
 print(areas)
 
