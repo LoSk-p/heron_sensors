@@ -36,51 +36,50 @@ class WaterDrone:
         self.log_file = open(f'{self.path}/utils/logs/{datetime.now()}_drone_numbers_{self.boat_number}', 'w')
         rospy.init_node(f"water_drone{self.boat_number}", anonymous=False)
 
-        if self.with_pollution_looking and not self.real:
-            x0 = 49.8988
-            self.x_min = x0
-            y0 = 8.89844
-            self.y_min = y0
-            x1 = 49.8998995
-            y1 = 8.90168012
-            shape_x = 413 + 1
-            shape_y = 1248 + 1
-            step_x = (x1 - x0)/shape_x
-            self.x_step = step_x
-            step_y = (y1 - y0)/shape_y
-            self.y_step = step_y
-            with open(f'{self.path}/utils/map/for_painting') as map_temp:
-                lat = []
-                lon = []
-                temp = []
-                r = 0.0002
-                lat = np.arange(x0, x1, step_x)   # 49.8998995
-                lon = np.arange(y0, y1, step_y)    # 8.9016801     
-                rospy.loginfo(f'lat {lat}')
-                for line in map_temp:
-                    line = line.split(';')
-                    #rospy.loginfo(line)
-                    temp.append(float(line[2]))
+        x0 = 49.8988
+        self.x_min = x0
+        y0 = 8.89844
+        self.y_min = y0
+        x1 = 49.8998995
+        y1 = 8.90168012
+        shape_x = 413 + 1
+        shape_y = 1248 + 1
+        step_x = (x1 - x0)/shape_x
+        self.x_step = step_x
+        step_y = (y1 - y0)/shape_y
+        self.y_step = step_y
+        with open(f'{self.path}/utils/map/for_painting') as map_temp:
+            lat = []
+            lon = []
+            temp = []
+            r = 0.0002
+            lat = np.arange(x0, x1, step_x)   # 49.8998995
+            lon = np.arange(y0, y1, step_y)    # 8.9016801     
+            rospy.loginfo(f'lat {lat}')
+            for line in map_temp:
+                line = line.split(';')
+                #rospy.loginfo(line)
+                temp.append(float(line[2]))
 
-            Y, X = np.meshgrid(lon, lat)
-            rospy.loginfo(f'X, Y {X}, {Y}')
-            temp = np.array(temp)
-            rospy.loginfo(f"temp {temp}")
-            temp = temp.reshape((shape_y, shape_x))
-            rospy.loginfo(f"temp reshaped {temp}")
-            temp = np.transpose(temp)
-            self.fig, self.ax = plt.subplots()
-            rospy.loginfo(f'x shape {X.shape} z shape {temp.shape}')
-            CS_common = self.ax.contour(X, Y, temp, 25)
-            CS_lvl = self.ax.contour(X, Y, temp, levels=[self.looking_value_temp], colors='b')
+        Y, X = np.meshgrid(lon, lat)
+        rospy.loginfo(f'X, Y {X}, {Y}')
+        temp = np.array(temp)
+        rospy.loginfo(f"temp {temp}")
+        temp = temp.reshape((shape_y, shape_x))
+        rospy.loginfo(f"temp reshaped {temp}")
+        temp = np.transpose(temp)
+        self.fig, self.ax = plt.subplots()
+        rospy.loginfo(f'x shape {X.shape} z shape {temp.shape}')
+        CS_common = self.ax.contour(X, Y, temp, 25)
+        CS_lvl = self.ax.contour(X, Y, temp, levels=[self.looking_value_temp], colors='b')
 
-            self.ax.clabel(CS_common, inline=True, fontsize=10)
-            self.ax.clabel(CS_lvl, inline=True, fontsize=10)
-            self.ax.set_title('Isoline follow')
-            self.ax.set_xlabel("Latitude, °")
-            self.ax.set_ylabel("Долгота, °")
-            plt.draw()
-            plt.pause(0.01)
+        self.ax.clabel(CS_common, inline=True, fontsize=10)
+        self.ax.clabel(CS_lvl, inline=True, fontsize=10)
+        self.ax.set_title('Isoline follow')
+        self.ax.set_xlabel("Latitude, °")
+        self.ax.set_ylabel("Longitude, °")
+        plt.draw()
+        plt.pause(0.01)
             
         self.my_lat = 0
         self.my_lon = 0
@@ -127,7 +126,7 @@ class WaterDrone:
         self.angle_step = 25*math.pi/180 # угол пооворота при нахождении загрязения (рад)
         self.prev_temp = 0
         self.prev_time = 0
-        self.u_0 = 0.5
+        self.u_0 = 0.3
         #self.f1 = plt.figure(1)
         #self.f2 = plt.figure(2)
         self.arr_x = []
@@ -139,6 +138,29 @@ class WaterDrone:
         self.stopped = False
         self.noise = 0
         self.wave = 0
+        self.time = 0
+
+    def _euler_from_quaternion(self, x, y, z, w):
+        """
+        Convert a quaternion into euler angles (roll, pitch, yaw)
+        roll is rotation around x in radians (counterclockwise)
+        pitch is rotation around y in radians (counterclockwise)
+        yaw is rotation around z in radians (counterclockwise)
+        """
+        t0 = +2.0 * (w * x + y * z)
+        t1 = +1.0 - 2.0 * (x * x + y * y)
+        roll_x = math.atan2(t0, t1)
+     
+        t2 = +2.0 * (w * y - z * x)
+        t2 = +1.0 if t2 > +1.0 else t2
+        t2 = -1.0 if t2 < -1.0 else t2
+        pitch_y = math.asin(t2)
+     
+        t3 = +2.0 * (w * z + x * y)
+        t4 = +1.0 - 2.0 * (y * y + z * z)
+        yaw_z = math.atan2(t3, t4)
+     
+        return roll_x, pitch_y, yaw_z # in radians
 
 
     def get_coord(self, data):
@@ -149,7 +171,8 @@ class WaterDrone:
             plus_lat = 0
             plus_lon = 0
         if self.waves:
-            self.wave = 0.000008*(math.sin(1000*(data.latitude + plus_lat)) + math.sin(1000*(data.longitude + plus_lon)))
+            self.wave = 0.000008*(math.sin(1000*(data.latitude + plus_lat)) + math.sin(1000*(data.longitude + plus_lon))) + 0.000008*0.01*math.sin(0.087)*math.cos(0.087)*self.time
+            self.time += 1
             #rospy.loginfo(f"Wave: {self.wave}")
         else: 
             self.wave = 0
@@ -271,12 +294,12 @@ class WaterDrone:
         self.current_line['b'] = target_lon - self.current_line['k']*target_lat
         #self.current_line['angle'] = math.pi/2 - math.atan2(target_lon - self.my_lon, target_lat - self.my_lat)
         angle = math.pi/2 - math.atan2(target_lon - self.my_lon, target_lat - self.my_lat)
-        if angle < 0:
-            angle = angle + 2*math.pi
-        elif angle > 2*math.pi:
-            angle = angle - 2*math.pi
-        else:
-            angle = angle
+        # if angle < 0:
+        #     angle = angle + 2*math.pi
+        # elif angle > 2*math.pi:
+        #     angle = angle - 2*math.pi
+        # else:
+        #     angle = angle
 
         print(f'angle = {self.current_line["angle"]}')
         return angle
@@ -299,16 +322,18 @@ class WaterDrone:
         return delta_temp
     
     def get_orientation(self, data):
-        if self.real:
-            if (data.orientation.w < -0.7) and (data.orientation.w > -1) and (data.orientation.z > 0):
-                angle = 2*math.acos(-data.orientation.w)
-                self.current_angle = self.change_angle(angle, 0.5)
-            else:
-                angle = 2*math.acos(data.orientation.w)
-                self.current_angle = self.change_angle(angle, 0.5)
-            print(f'get orientation {self.current_angle}')
-        else:
-            self.current_angle = 2*math.acos(data.orientation.w)
+        roll, pitch, yaw = self._euler_from_quaternion(data.orientation.x, data.orientation.y, data.orientation.z, data.orientation.w)
+        self.current_angle = yaw
+        # if self.real:
+        #     if (data.orientation.w < -0.7) and (data.orientation.w > -1) and (data.orientation.z > 0):
+        #         angle = 2*math.acos(-data.orientation.w)
+        #         self.current_angle = self.change_angle(angle, 0.5)
+        #     else:
+        #         angle = 2*math.acos(data.orientation.w)
+        #         self.current_angle = self.change_angle(angle, 0.5)
+        #     print(f'get orientation {self.current_angle}')
+        # else:
+        #     self.current_angle = 2*math.acos(data.orientation.w)
     
 
     def inpollution_control(self):
@@ -421,10 +446,11 @@ class WaterDrone:
 
 
     def go_targets(self):
-        time.sleep(1)
+        #time.sleep(0.1)
         inPollution = False
         angle_err = 0.05
         drive_msg = Drive()
+        helm_msg = Helm()
         rcin_msg = OverrideRCIn()
         for target in self.way_coord:
             rospy.loginfo(f'New target {target}')
@@ -487,12 +513,12 @@ class WaterDrone:
                     rcin_msg.channels = [turn, 1466, go, 1469, 1467, 1954, 1467, 1502]
                     self.rc_pub.publish(rcin_msg)
                 else:
-                    drive_msg.left = self.u_0 + 0.2*(self.current_angle - self.current_line['angle'])
-                    drive_msg.right = self.u_0 - 0.2*(self.current_angle - self.current_line['angle'])
+                    helm_msg.thrust = self.u_0
+                    helm_msg.yaw_rate = 0.2*(self.current_angle - self.current_line['angle'])
+                    self.helm_pub.publish(helm_msg)
                     print(f"req angle: {self.current_line['angle']}")
                     print(f"curr angl : {self.current_angle}")
-                    print(f"pub left {drive_msg.left} right {drive_msg.right}")
-                    self.thrust_pub.publish(drive_msg)
+                    print(f"pub th {helm_msg.thrust} yaw_rate {helm_msg.yaw_rate}")
 
                 rospy.loginfo(f'my_lat = {self.my_lat}, my_lon = {self.my_lon}')
                 self.pub_status()
@@ -507,7 +533,7 @@ class WaterDrone:
 if __name__ == '__main__':  
     try:  
         drone = WaterDrone(0)
-#        drone.go_targets()
+        # drone.go_targets()
         drone.inpollution_control()
     except KeyboardInterrupt:
         rospy.loginfo("exception")
